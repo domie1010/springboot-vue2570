@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.GangweiDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.gangwei_name as gangweiName
+        ,a.gangwei_types as gangweiTypes
+        ,a.gangwei_money as gangweiMoney
+        ,a.gangwei_yaoqiu as gangweiYaoqiu
+        ,a.gangwei_shijian as gangweiShijian
+        ,a.gangwei_content as gangweiContent
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.GangweiView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+
+        FROM gangwei  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.gangweiName != '' and params.gangweiName != null and params.gangweiName != 'null' ">
+                and a.gangwei_name like CONCAT('%',#{params.gangweiName},'%')
+            </if>
+            <if test="params.gangweiTypes != null">
+                and a.gangwei_types = #{params.gangweiTypes}
+            </if>
+            <if test="params.gangweiMoneyStart != null ">
+                <![CDATA[  and a.gangwei_money >= #{params.gangweiMoneyStart}   ]]>
+            </if>
+            <if test="params.gangweiMoneyEnd != null ">
+                <![CDATA[  and a.gangwei_money <= #{params.gangweiMoneyEnd}   ]]>
+            </if>
+            <if test=" params.gangweiYaoqiu != '' and params.gangweiYaoqiu != null and params.gangweiYaoqiu != 'null' ">
+                and a.gangwei_yaoqiu like CONCAT('%',#{params.gangweiYaoqiu},'%')
+            </if>
+            <if test="params.gangweiShijianStart != null">
+                <![CDATA[  and a.gangwei_shijian >= #{params.gangweiShijianStart}   ]]>
+            </if>
+            <if test="params.gangweiShijianEnd != null">
+                <![CDATA[  and a.gangwei_shijian <= #{params.gangweiShijianEnd}   ]]>
+            </if>
+            <if test=" params.gangweiContent != '' and params.gangweiContent != null and params.gangweiContent != 'null' ">
+                and a.gangwei_content like CONCAT('%',#{params.gangweiContent},'%')
+            </if>
+
+        </where>
+        order by a.${params.orderBy} desc
+    </select>
+
+</mapper>
